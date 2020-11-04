@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TestDoubles.Application;
 
 namespace TestDoubles.Fakes
@@ -8,9 +9,11 @@ namespace TestDoubles.Fakes
     {
         private readonly Dictionary<Guid, Customer> _customers;
 
-        public FakeCustomerRepository(Dictionary<Guid, Customer>? customers = null)
+        public FakeCustomerRepository(IEnumerable<Customer>? customers = null)
         {
-            _customers = customers ?? new Dictionary<Guid, Customer>();
+            _customers = customers is null
+                             ? new Dictionary<Guid, Customer>()
+                             : customers.ToDictionary(c => c.Id);
         }
 
         public Customer GetCustomer(Guid customerId) => _customers[customerId];
@@ -18,4 +21,3 @@ namespace TestDoubles.Fakes
         public void Save(Customer customer) => _customers[customer.Id] = customer;
     }
 }
-
